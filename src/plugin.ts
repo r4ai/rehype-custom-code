@@ -33,12 +33,12 @@ export type ShikiOptions = {
 export type RehypeCustomCodeOptions = {
   langAssociations?: Record<string, string>;
   ignoreLangs?: string[];
-  shiki: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | undefined;
+  shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
 export const defaultRehypeCustomCodeOptions: Required<RehypeCustomCodeOptions> =
   {
-    shiki: undefined,
+    shiki: false,
     langAssociations: {},
     ignoreLangs: [],
   };
@@ -81,18 +81,18 @@ const defaultShikiOptions: Required<ShikiOptions> = {
  * console.log(html.toString());
  * ```
  */
-export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions], Root> = (
+export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
   _options,
 ) => {
   const options: Required<RehypeCustomCodeOptions> = {
     ...defaultRehypeCustomCodeOptions,
     ..._options,
-    shiki: _options.shiki
+    shiki: _options?.shiki
       ? {
           ...defaultShikiOptions,
           ..._options.shiki,
         }
-      : undefined,
+      : false,
   } as const;
 
   const gettingHighlighter = getHighlighter(options.shiki);
