@@ -1,24 +1,25 @@
 import { dedent } from "@qnighy/dedent";
+import { JSDOM } from "jsdom";
+import JSON5 from "json5";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { beforeAll, describe, expect, test } from "vitest";
-import rehypeBeautyCode, {
-  RehypeCustomCodeBlockOptions,
-  defaultRehypeCustomCodeBlockOptions,
+import {
+  RehypeCustomCodeOptions,
+  defaultRehypeCustomCodeOptions,
+  rehypeCustomCode,
 } from "../src/plugin";
-import { JSDOM } from "jsdom";
-import JSON5 from "json5";
 
 const md2html = async (
   mdText: string,
-  options: RehypeCustomCodeBlockOptions = defaultRehypeCustomCodeBlockOptions
+  options: RehypeCustomCodeOptions = defaultRehypeCustomCodeOptions,
 ) => {
   const html = await unified()
     .use(remarkParse)
     .use(remarkRehype)
-    .use(rehypeBeautyCode, options)
+    .use(rehypeCustomCode, options)
     .use(rehypeStringify)
     .process(mdText);
   return html.toString();

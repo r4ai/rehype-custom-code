@@ -1,5 +1,5 @@
 export {
-  rehypeCustomCodeBlock,
-  RehypeCustomCodeBlockOptions,
-  defaultRehypeCustomCodeBlockOptions,
+  rehypeCustomCode,
+  RehypeCustomCodeOptions,
+  defaultRehypeCustomCodeOptions,
 } from "./plugin";

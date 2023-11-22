@@ -1,10 +1,8 @@
 import { BuiltinTheme, CodeOptionsThemes } from "shikiji";
-import { RehypeCustomCodeBlockOptions, ShikiOptions } from "./plugin";
 import { getHighlighter as getShikiHighlighter } from "shikiji";
+import { RehypeCustomCodeOptions, ShikiOptions } from "./plugin";
 
-export const getHighlighter = (
-  options: RehypeCustomCodeBlockOptions["shiki"]
-) => {
+export const getHighlighter = (options: RehypeCustomCodeOptions["shiki"]) => {
   if (!options) {
     return undefined;
   }

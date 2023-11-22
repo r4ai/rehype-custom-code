@@ -1,4 +1,4 @@
-# rehype-custom-code-block (WIP)
+# rehype-custom-code (WIP)
 
 This plugin is intended to facilitate the creation of your own custom code blocks using custom components such as React by outputting metadata as Props.
 
@@ -18,13 +18,13 @@ This plugin also supports syntax highlighting with shikiji by adding `options.sh
 
 ```sh
 # npm
-npm install rehype-custom-code-block
+npm install rehype-custom-code
 
 # pnpm
-pnpm add rehype-custom-code-block
+pnpm add rehype-custom-code
 
 # bun
-bun add rehype-custom-code-block
+bun add rehype-custom-code
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ bun add rehype-custom-code-block
 This is the most basic example and is usually used in conjunction with rehype-react or mdx, with the pre tag replaced by its own component. To allow customization with your own components, this plugin is designed to pass metadata information as Props; in the case of HTML output, this is output as HTML attributes.
 
 ```ts
-import { rehypeCustomCodeBlock } from "rehype-custom-code-block";
+import { rehypeCustomCode } from "rehype-custom-code";
 
 const md = `
   \`\`\`javascript title="Hello, World!" {1-5}
@@ -45,7 +45,7 @@ const md = `
 const html = await unified()
   .use(remarkParse)
   .use(remarkRehype)
-  .use(rehypeBeautyCode, {
+  .use(rehypeCustomCode, {
     shiki: {
       themes: {
         light: "github-light",

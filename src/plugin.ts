@@ -1,6 +1,8 @@
 import merge from "deepmerge";
 import type { Element, Root } from "hast";
 import { toString as hastToString } from "hast-util-to-string";
+import JSON5 from "json5";
+import { kebabCase } from "scule";
 import type {
   BuiltinLanguage,
   BuiltinTheme,
@@ -8,13 +10,11 @@ import type {
   LanguageInput,
 } from "shikiji";
 import { bundledLanguages } from "shikiji";
-import { getHighlighter } from "./shiki";
 import { type Plugin } from "unified";
 import { visit } from "unist-util-visit";
-import { getLangFromClassNames } from "./lang";
 import { getMeta, isCodeElement, isPreElement } from "./elements";
-import { kebabCase } from "scule";
-import JSON5 from "json5";
+import { getLangFromClassNames } from "./lang";
+import { getHighlighter } from "./shiki";
 
 export type ShikiOptions = {
   /**
@@ -30,13 +30,13 @@ export type ShikiOptions = {
   meta?: Record<string, unknown>;
 };
 
-export type RehypeCustomCodeBlockOptions = {
+export type RehypeCustomCodeOptions = {
   langAssociations?: Record<string, string>;
   ignoreLangs?: string[];
   shiki: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | undefined;
 };
 
-export const defaultRehypeCustomCodeBlockOptions: Required<RehypeCustomCodeBlockOptions> =
+export const defaultRehypeCustomCodeOptions: Required<RehypeCustomCodeOptions> =
   {
     shiki: undefined,
     langAssociations: {},
@@ -55,32 +55,37 @@ const defaultShikiOptions: Required<ShikiOptions> = {
  * @returns unified plugin
  *
  * @example
- * const mdText = `
- * \`\`\`js
- * console.log("Hello, World!");
- * \`\`\`
+ * ```ts
+ * import { rehypeCustomCode } from "rehype-custom-code";
+ *
+ * const md = `
+ *   \`\`\`javascript title="Hello, World!" {1-5}
+ *   console.log("Hello, World!");
+ *   \`\`\`
  * `;
  *
  * const html = await unified()
  *   .use(remarkParse)
  *   .use(remarkRehype)
- *   .use(rehypeShiki, {
- *     highlighter: await getHighlighter({
- *       theme: "material-theme-darker",
- *     }),
+ *   .use(rehypeCustomCode, {
+ *     shiki: {
+ *       themes: {
+ *         light: "github-light",
+ *         dark: "one-dark-pro",
+ *       },
+ *     },
  *   })
  *   .use(rehypeStringify)
- *   .process(mdText);
+ *   .process(md);
  *
  * console.log(html.toString());
- * // >>> <pre class="shiki material-theme-darker" style="background-color: #212121" tabindex="0"><code><span class="line"><span style="color: #EEFFFF">console</span><span style="color: #89DDFF">.</span><span style="color: #82AAFF">log</span><span style="color: #EEFFFF">(</span><span style="color: #89DDFF">"</span><span style="color: #C3E88D">Hello, World!</span><span style="color: #89DDFF">"</span><span style="color: #EEFFFF">)</span><span style="color: #89DDFF">;</span></span><span class="line"><span style="color: #82AAFF">main</span><span style="color: #EEFFFF">()</span><span style="color: #89DDFF">;</span></span><span class="line"></span></code></pre>
+ * ```
  */
-export const rehypeCustomCodeBlock: Plugin<
-  [RehypeCustomCodeBlockOptions],
-  Root
-> = (_options) => {
-  const options: Required<RehypeCustomCodeBlockOptions> = {
-    ...defaultRehypeCustomCodeBlockOptions,
+export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions], Root> = (
+  _options,
+) => {
+  const options: Required<RehypeCustomCodeOptions> = {
+    ...defaultRehypeCustomCodeOptions,
     ..._options,
     shiki: _options.shiki
       ? {
@@ -107,7 +112,7 @@ export const rehypeCustomCodeBlock: Plugin<
       // detect language from class names
       const lang = getLangFromClassNames(
         codeNode.properties.className as string[],
-        options.langAssociations
+        options.langAssociations,
       );
 
       // if the language is unknown or ignored, skip
@@ -142,7 +147,7 @@ export const rehypeCustomCodeBlock: Plugin<
       newPreNode.position = preNode.position;
       newPreNode.properties = merge(
         preNode.properties ?? {},
-        newPreNode.properties ?? {}
+        newPreNode.properties ?? {},
       );
 
       // set meta data
@@ -162,4 +167,4 @@ export const rehypeCustomCodeBlock: Plugin<
   };
 };
 
-export default rehypeCustomCodeBlock;
+export default rehypeCustomCode;
