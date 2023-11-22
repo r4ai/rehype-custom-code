@@ -7,7 +7,8 @@ import type {
   CodeOptionsThemes,
   LanguageInput,
 } from "shikiji";
-import { bundledLanguages, getHighlighter } from "shikiji";
+import { bundledLanguages } from "shikiji";
+import { getHighlighter } from "./shiki";
 import { type Plugin } from "unified";
 import { visit } from "unist-util-visit";
 import { getLangFromClassNames } from "./lang";
@@ -15,37 +16,7 @@ import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { kebabCase } from "scule";
 import JSON5 from "json5";
 
-type InternalRehypeCustomCodeBlockOptions = {
-  /**
-   * glob pattern to language name associations.
-   * - key: glob pattern
-   * - value: language name. if you want not to be highlighted with shiki, set `ignore`.
-   * @default {}
-   * @example
-   * ```ts
-   * const langAssociations = {
-   *   "ad-.*": "ignore",       // don't highlight `ad-.*` with shiki. (`ad-note`, `ad-warn`, ...)
-   *                            // you can also use `false` in replace of `"ignore"`. (`"ad-.*"": false`)
-   *   "jsx-like-lang": "jsx",  // highlight `jsx-like-lang` as jsx
-   * };
-   * ```
-   *
-   * following code block will be highlighted as jsx:
-   *
-   * ````md
-   * ```jsx-like-lang
-   * <div>Hello, World!</div>
-   * ```
-   * ````
-   */
-  langAssociations?: Record<string, string | false>;
-
-  /**
-   * whether to highlight unknown language as plain text or not.
-   * @default true
-   */
-  shouldHighlightUnknownLang?: boolean;
-
+export type ShikiOptions = {
   /**
    * Language names to include.
    *
@@ -54,29 +25,28 @@ type InternalRehypeCustomCodeBlockOptions = {
   langs?: Array<LanguageInput | BuiltinLanguage>;
 
   /**
-   * Add `highlighted` class to lines defined in after codeblock
-   *
-   * @default true
-   */
-  highlightLines?: boolean | string;
-
-  /**
    * Extra meta data to pass to the highlighter
    */
   meta?: Record<string, unknown>;
 };
 
-export type RehypeCustomCodeBlockOptions =
-  InternalRehypeCustomCodeBlockOptions & CodeOptionsThemes<BuiltinTheme>;
+export type RehypeCustomCodeBlockOptions = {
+  langAssociations?: Record<string, string>;
+  ignoreLangs?: string[];
+  shiki: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | undefined;
+};
 
-export const defaultRehypeCustomCodeBlockOptions: Required<InternalRehypeCustomCodeBlockOptions> =
+export const defaultRehypeCustomCodeBlockOptions: Required<RehypeCustomCodeBlockOptions> =
   {
+    shiki: undefined,
     langAssociations: {},
-    shouldHighlightUnknownLang: true,
-    langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
-    highlightLines: false,
-    meta: {},
+    ignoreLangs: [],
   };
+
+const defaultShikiOptions: Required<ShikiOptions> = {
+  langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
+  meta: {},
+};
 
 /**
  * convert pre element to highlighted pre element using shiki
@@ -109,25 +79,24 @@ export const rehypeCustomCodeBlock: Plugin<
   [RehypeCustomCodeBlockOptions],
   Root
 > = (_options) => {
-  const options = {
+  const options: Required<RehypeCustomCodeBlockOptions> = {
     ...defaultRehypeCustomCodeBlockOptions,
     ..._options,
-  } as const satisfies RehypeCustomCodeBlockOptions;
+    shiki: _options.shiki
+      ? {
+          ...defaultShikiOptions,
+          ..._options.shiki,
+        }
+      : undefined,
+  } as const;
 
-  const themes = (
-    "themes" in options ? Object.values(options.themes) : [options.theme]
-  ).filter(Boolean) as BuiltinTheme[];
-  const gettingHighlighter = getHighlighter({
-    themes,
-    langs: options.langs,
-  });
+  const gettingHighlighter = getHighlighter(options.shiki);
 
   return async (tree, file) => {
     const highlighter = await gettingHighlighter;
 
     visit(tree, "element", (preNode, index, parent) => {
       // check if the current node is a block code element
-      // if not, return
       if (!parent || index == null || !isPreElement(preNode)) return;
 
       // check if the current pre node has a code element as its child
@@ -140,57 +109,55 @@ export const rehypeCustomCodeBlock: Plugin<
         codeNode.properties.className as string[],
         options.langAssociations
       );
-      if (lang === "ignore" || lang === false) return; // if this lang is ignored manually by settings, return
-      if (
-        !(options.shouldHighlightUnknownLang || (lang && lang in options.langs))
-      )
-        return; // if this code is unknown language, return
+
+      // if the language is unknown or ignored, skip
+      if (!lang || options.ignoreLangs.includes(lang)) return;
 
       // get meta data
       const meta = getMeta(codeNode);
 
-      // get highlighted pre html string
-      const highlightedFragment = (() => {
+      // get new highlighted pre node if `options.shiki` is given, otherwise use the current pre node
+      const newPreNode = (() => {
         try {
-          return highlighter.codeToHast(codeText, {
-            ...options,
-            lang:
-              lang && highlighter.getLoadedLanguages().includes(lang)
-                ? lang
-                : "plaintext",
-          });
+          if (options.shiki) {
+            const fragment = highlighter?.codeToHast(codeText, {
+              ...options.shiki,
+              lang:
+                lang && highlighter.getLoadedLanguages().includes(lang)
+                  ? lang
+                  : "plaintext",
+            });
+            return fragment?.children[0] as Element | undefined;
+          }
+          return preNode;
         } catch {
           file.fail(`failed to highlight code block: ${codeText}`);
           return undefined;
         }
       })();
-      if (!highlightedFragment) return;
+      if (!isPreElement(newPreNode)) return;
 
-      const highlightedPre = highlightedFragment.children[0] as
-        | Element
-        | undefined;
-      if (!isPreElement(highlightedPre)) return;
-      highlightedPre.data = merge(
-        preNode.data ?? {},
-        highlightedPre.data ?? {}
-      );
-      highlightedPre.position = preNode.position;
-      highlightedPre.properties = merge(
+      // merge the current pre node with the new highlighted pre node
+      newPreNode.data = merge(preNode.data ?? {}, newPreNode.data ?? {});
+      newPreNode.position = preNode.position;
+      newPreNode.properties = merge(
         preNode.properties ?? {},
-        highlightedPre.properties ?? {}
+        newPreNode.properties ?? {}
       );
-      highlightedPre.properties.dataLang = lang;
+
+      // set meta data
+      newPreNode.properties.dataLang = lang;
       for (const [key, value] of Object.entries(meta)) {
         if (Array.isArray(value) || typeof value === "object") {
-          highlightedPre.properties[`data-${kebabCase(key)}`] =
+          newPreNode.properties[`data-${kebabCase(key)}`] =
             JSON5.stringify(value);
         } else {
-          highlightedPre.properties[`data-${kebabCase(key)}`] = String(value);
+          newPreNode.properties[`data-${kebabCase(key)}`] = String(value);
         }
       }
 
       // replace the current pre node with the highlighted pre node which is generated by shiki
-      parent.children.splice(index, 1, highlightedPre as Element);
+      parent.children.splice(index, 1, newPreNode as Element);
     });
   };
 };

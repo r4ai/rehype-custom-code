@@ -1,4 +1,4 @@
-import { RehypeCustomCodeBlockOptions } from "./plugin";
+import { RehypeCustomCodeBlockOptions, ShikiOptions } from "./plugin";
 
 /**
  * Get language from class names
@@ -21,7 +21,7 @@ import { RehypeCustomCodeBlockOptions } from "./plugin";
  */
 export const getLangFromClassNames = (
   classNames?: string[],
-  associations: Required<RehypeCustomCodeBlockOptions>["langAssociations"] = {}
+  associations: RehypeCustomCodeBlockOptions["langAssociations"] = {}
 ) => {
   const prefix = "language-" as const;
   const lang = classNames

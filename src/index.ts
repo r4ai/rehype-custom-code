@@ -1,1 +1,5 @@
-export const helloWorld = () => "Hello, world!";
+export {
+  rehypeCustomCodeBlock,
+  RehypeCustomCodeBlockOptions,
+  defaultRehypeCustomCodeBlockOptions,
+} from "./plugin";
