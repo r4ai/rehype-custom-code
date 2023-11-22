@@ -33,6 +33,7 @@ export type ShikiOptions = {
 export type RehypeCustomCodeOptions = {
   langAssociations?: Record<string, string>;
   ignoreLangs?: string[];
+  propsPrefix?: string;
   shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
@@ -41,6 +42,7 @@ export const defaultRehypeCustomCodeOptions: Required<RehypeCustomCodeOptions> =
     shiki: false,
     langAssociations: {},
     ignoreLangs: [],
+    propsPrefix: "data-",
   };
 
 const defaultShikiOptions: Required<ShikiOptions> = {
@@ -153,11 +155,11 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
       // set meta data
       newPreNode.properties.dataLang = lang;
       for (const [key, value] of Object.entries(meta)) {
+        const propsKey = options.propsPrefix + kebabCase(key);
         if (Array.isArray(value) || typeof value === "object") {
-          newPreNode.properties[`data-${kebabCase(key)}`] =
-            JSON5.stringify(value);
+          newPreNode.properties[propsKey] = JSON5.stringify(value);
         } else {
-          newPreNode.properties[`data-${kebabCase(key)}`] = String(value);
+          newPreNode.properties[propsKey] = String(value);
         }
       }
 
