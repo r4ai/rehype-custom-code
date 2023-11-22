@@ -33,6 +33,11 @@ type Group = {
 const parseRegex =
   /\{(?<range>.*?)\}|(?<kv>(?<kvKey>[^\s]+?)\s*=\s*(?<kvValue>[^\s"']+?))(?=\s|$)|(?<kvDoubleQuote>(?<kvDoubleQuoteKey>[^\s]+?)\s*=\s*"(?<kvDoubleQuoteValue>.*?)(?<!\\)")|(?<kvSingleQuote>(?<kvSingleQuoteKey>[^\s]+?)\s*=\s*'(?<kvSingleQuoteValue>.*?)(?<!\\)')|(?<=\s|^)(?<boolValue>[^\s=]+?)(?=\s|$)/g;
 
+/**
+ * Parse meta string to object.
+ * @param meta meta string
+ * @returns meta object
+ */
 export const parseMeta = (meta: string) => {
   const matches = meta.matchAll(parseRegex);
 
