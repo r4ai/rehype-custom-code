@@ -8,6 +8,7 @@ import type {
   BuiltinTheme,
   CodeOptionsThemes,
   CodeToHastOptions,
+  HastTransformers,
   LanguageInput,
 } from "shikiji";
 import { bundledLanguages } from "shikiji";
@@ -31,12 +32,7 @@ export type ShikiOptions = {
    */
   meta?: Record<string, unknown>;
 
-  /**
-   * Options for `codeToHast` function.
-   *
-   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#codetohast
-   */
-  codeToHastOptions?: Partial<CodeToHastOptions>;
+  transforms?: (meta: Meta) => HastTransformers;
 };
 
 export type RehypeCustomCodeOptions = {
@@ -65,7 +61,7 @@ export const defaultRehypeCustomCodeOptions = (
 const defaultShikiOptions: Required<ShikiOptions> = {
   langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
   meta: {},
-  codeToHastOptions: {},
+  transforms: () => ({}),
 };
 
 /**
@@ -149,7 +145,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
           if (options.shiki) {
             const fragment = highlighter?.codeToHast(codeText, {
               ...options.shiki,
-              ...options.shiki.codeToHastOptions,
+              transforms: options.shiki.transforms?.(meta),
               lang:
                 lang && highlighter.getLoadedLanguages().includes(lang)
                   ? lang
@@ -183,6 +179,8 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
         const propsKey = getPropsKey(options.propsPrefix, key);
         if (Array.isArray(value) || typeof value === "object") {
           newPreNode.properties[propsKey] = JSON5.stringify(value);
+        } else if (value == null) {
+          newPreNode.properties[propsKey] = undefined;
         } else {
           newPreNode.properties[propsKey] = String(value);
         }

@@ -1,20 +1,20 @@
 import rangeParser from "parse-numeric-range";
 
 type RequiredMeta = {
-  range: number[];
-  showLineNumbers: boolean;
+  range?: number[];
+  showLineNumbers?: boolean;
 };
 
 type OptionalMeta = {
-  [key: string]: string | boolean | number[];
+  [key: string]: string | boolean | number[] | undefined;
 };
 
 export type Meta = Omit<OptionalMeta, keyof RequiredMeta> & RequiredMeta;
 
-export const defaultMeta = {
+export const defaultMeta: Required<Meta> = {
   range: [],
   showLineNumbers: false,
-} satisfies Meta;
+};
 
 type Group = {
   range?: string;
@@ -41,7 +41,7 @@ const parseRegex =
 export const parseMeta = (meta: string) => {
   const matches = meta.matchAll(parseRegex);
 
-  const metaObj: Meta = { ...defaultMeta };
+  const metaObj = { ...defaultMeta };
   for (const match of matches) {
     const groups = match.groups as Group;
     if (groups.range) {

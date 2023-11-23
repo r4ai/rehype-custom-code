@@ -4,6 +4,7 @@ import JSON5 from "json5";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import { HastTransformers } from "shikiji";
 import { unified } from "unified";
 import { beforeAll, describe, expect, test } from "vitest";
 import {
@@ -289,6 +290,31 @@ describe("rehypeShikiji", () => {
     expect(title).toBe("Hello, World!");
   });
 
+  test("check metaDataTransform option", async () => {
+    const md = dedent`
+      \`\`\`javascript {1-5}
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+    const html = await md2html(md, {
+      metaDataTransform: (meta) => {
+        const newMeta = { ...meta };
+        newMeta.range = undefined;
+        newMeta.highlightLines = meta.range;
+        return newMeta;
+      },
+    });
+    const doc = parser.parseFromString(html, "text/html");
+    const pre = doc.querySelector("pre");
+    expect(pre).not.toBeNull();
+
+    const highlightLines = pre?.getAttribute("data-highlight-lines") ?? "";
+    expect(JSON5.parse(highlightLines)).toEqual([1, 2, 3, 4, 5]);
+
+    const range = pre?.getAttribute("data-range");
+    expect(range).toBeNull();
+  });
+
   test("check shiki option", async () => {
     const md = dedent`
       \`\`\`javascript title="Hello, World!"
@@ -334,5 +360,39 @@ describe("rehypeShikiji", () => {
       const pre = doc.querySelector("pre");
       expect(pre?.classList.contains("shiki")).toBe(false);
     }
+  });
+
+  test("check shiki transform option", async () => {
+    const md = dedent`
+      \`\`\`rust title=hellworld.rs {2}
+      fn main() {
+          println!("Hello, World!");
+      }
+      \`\`\`
+    `;
+    const html = await md2html(md, {
+      shiki: {
+        themes: {
+          light: "github-light",
+          dark: "one-dark-pro",
+        },
+        transforms(meta) {
+          return {
+            line(hast, line) {
+              if (meta.range?.includes(line)) {
+                hast.properties["data-highlight-line"] = true;
+              }
+            },
+          };
+        },
+      },
+    });
+    console.log(html);
+    const doc = parser.parseFromString(html, "text/html");
+    const pre = doc.querySelector("pre");
+    expect(pre).not.toBeNull();
+
+    const highlightLine = pre?.querySelectorAll("span[data-highlight-line]");
+    expect(highlightLine?.length).toBe(1);
   });
 });
