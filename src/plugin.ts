@@ -7,6 +7,7 @@ import type {
   BuiltinLanguage,
   BuiltinTheme,
   CodeOptionsThemes,
+  CodeToHastOptions,
   LanguageInput,
 } from "shikiji";
 import { bundledLanguages } from "shikiji";
@@ -14,6 +15,7 @@ import { type Plugin } from "unified";
 import { visit } from "unist-util-visit";
 import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { getLangFromClassNames } from "./lang";
+import { Meta } from "./perser";
 import { getHighlighter } from "./shiki";
 
 export type ShikiOptions = {
@@ -28,6 +30,13 @@ export type ShikiOptions = {
    * Extra meta data to pass to the highlighter
    */
   meta?: Record<string, unknown>;
+
+  /**
+   * Options for `codeToHast` function.
+   *
+   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#codetohast
+   */
+  codeToHastOptions?: Partial<CodeToHastOptions>;
 };
 
 export type RehypeCustomCodeOptions = {
@@ -35,6 +44,7 @@ export type RehypeCustomCodeOptions = {
   ignoreLangs?: string[];
   propsPrefix?: string;
   metaStringPreprocess?: (metaString: string) => string;
+  metaDataTransform?: (meta: Meta) => Meta;
   shouldExportCodeAsProps?: boolean;
   shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
@@ -49,11 +59,13 @@ export const defaultRehypeCustomCodeOptions = (
     propsPrefix: "data",
     shouldExportCodeAsProps: options?.shiki ? false : true,
     metaStringPreprocess: (metaString) => metaString,
+    metaDataTransform: (meta) => meta,
   }) satisfies Required<RehypeCustomCodeOptions>;
 
 const defaultShikiOptions: Required<ShikiOptions> = {
   langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
   meta: {},
+  codeToHastOptions: {},
 };
 
 /**
@@ -127,7 +139,9 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
       if (!lang || options.ignoreLangs.includes(lang)) return;
 
       // get meta data
-      const meta = getMeta(codeNode, options.metaStringPreprocess);
+      const meta = options.metaDataTransform(
+        getMeta(codeNode, options.metaStringPreprocess),
+      );
 
       // get new highlighted pre node if `options.shiki` is given, otherwise use the current pre node
       const newPreNode = (() => {
@@ -135,6 +149,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
           if (options.shiki) {
             const fragment = highlighter?.codeToHast(codeText, {
               ...options.shiki,
+              ...options.shiki.codeToHastOptions,
               lang:
                 lang && highlighter.getLoadedLanguages().includes(lang)
                   ? lang
@@ -181,5 +196,3 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
 
 const getPropsKey = (prefix: string, key: string) =>
   prefix.length === 0 ? kebabCase(key) : `${prefix}-${kebabCase(key)}`;
-
-export default rehypeCustomCode;

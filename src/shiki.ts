@@ -12,6 +12,7 @@ export const getHighlighter = (options: RehypeCustomCodeOptions["shiki"]) => {
   ).filter(Boolean) as BuiltinTheme[];
 
   return getShikiHighlighter({
+    ...options.meta,
     themes,
     langs: options.langs,
   });
