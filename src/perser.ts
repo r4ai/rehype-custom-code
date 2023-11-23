@@ -53,12 +53,12 @@ export const parseMeta = (meta: string) => {
     }
     if (groups.kvDoubleQuoteKey && groups.kvDoubleQuoteValue) {
       metaObj[groups.kvDoubleQuoteKey] = retrieveEscapedString(
-        groups.kvDoubleQuoteValue
+        groups.kvDoubleQuoteValue,
       );
     }
     if (groups.kvSingleQuoteKey && groups.kvSingleQuoteValue) {
       metaObj[groups.kvSingleQuoteKey] = retrieveEscapedString(
-        groups.kvSingleQuoteValue
+        groups.kvSingleQuoteValue,
       );
     }
     if (groups.boolValue) {
