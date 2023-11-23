@@ -388,7 +388,6 @@ describe("rehypeShikiji", () => {
         },
       },
     });
-    console.log(html);
     const doc = parser.parseFromString(html, "text/html");
     const pre = doc.querySelector("pre");
     expect(pre).not.toBeNull();

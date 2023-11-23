@@ -28,7 +28,7 @@ jobs:
         run: bun run build
 
       - name: Test package
-        run: bun test
+        run: bun run turbo test
 
       - name: npm publish
         run: npm publish --access public
