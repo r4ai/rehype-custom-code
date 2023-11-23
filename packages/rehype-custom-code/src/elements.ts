@@ -35,5 +35,5 @@ export const getMeta = (
   const metaString = hasMetaData(node)
     ? node.data.meta
     : (node.properties?.metaString as string) ?? "";
-  return parseMeta(metaString);
+  return parseMeta(preprocess(metaString));
 };
