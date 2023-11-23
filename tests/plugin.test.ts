@@ -14,7 +14,7 @@ import {
 
 const md2html = async (
   mdText: string,
-  options: RehypeCustomCodeOptions = defaultRehypeCustomCodeOptions,
+  options: RehypeCustomCodeOptions = defaultRehypeCustomCodeOptions(),
 ) => {
   const html = await unified()
     .use(remarkParse)

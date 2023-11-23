@@ -35,17 +35,21 @@ export type RehypeCustomCodeOptions = {
   ignoreLangs?: string[];
   propsPrefix?: string;
   metaStringPreprocess?: (metaString: string) => string;
+  shouldExportCodeAsProps?: boolean;
   shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
-export const defaultRehypeCustomCodeOptions: Required<RehypeCustomCodeOptions> =
-  {
+export const defaultRehypeCustomCodeOptions = (
+  options?: RehypeCustomCodeOptions,
+) =>
+  ({
     shiki: false,
     langAssociations: {},
     ignoreLangs: [],
     propsPrefix: "data-",
+    shouldExportCodeAsProps: options?.shiki ? false : true,
     metaStringPreprocess: (metaString) => metaString,
-  };
+  }) satisfies Required<RehypeCustomCodeOptions>;
 
 const defaultShikiOptions: Required<ShikiOptions> = {
   langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
@@ -89,7 +93,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
   _options,
 ) => {
   const options: Required<RehypeCustomCodeOptions> = {
-    ...defaultRehypeCustomCodeOptions,
+    ...defaultRehypeCustomCodeOptions(_options),
     ..._options,
     shiki: _options?.shiki
       ? {
