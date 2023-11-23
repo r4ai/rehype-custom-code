@@ -1,6 +1,6 @@
 {
   "name": "rehype-custom-code",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "",
   "keywords": [],
   "author": "rai",
@@ -35,7 +35,7 @@
     "prepare": "husky install"
   },
   "peerDependencies": {
-    "shikiji": "^0.6.13"
+    "shikiji": "^0.7.0"
   },
   "dependencies": {
     "deepmerge": "^4.3.1",
@@ -52,16 +52,16 @@
     "@types/hast": "^3.0.3",
     "@types/jsdom": "^21.1.6",
     "bun-plugin-dts": "^0.2.1",
-    "bun-types": "^1.0.7",
+    "bun-types": "^1.0.14",
     "concurrently": "^8.2.2",
-    "husky": "^8.0.0",
+    "husky": "^8.0.3",
     "jsdom": "^22.1.0",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "rehype-stringify": "^10.0.0",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.0.0",
     "rimraf": "^5.0.5",
-    "typescript": "^5.0.0",
+    "typescript": "^5.3.2",
     "unified": "^11.0.4",
     "vitest": "^0.34.6"
   }

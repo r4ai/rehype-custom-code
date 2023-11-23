@@ -7,9 +7,8 @@ import type {
   BuiltinLanguage,
   BuiltinTheme,
   CodeOptionsThemes,
-  CodeToHastOptions,
-  HastTransformers,
   LanguageInput,
+  ShikijiTransformer,
 } from "shikiji";
 import { bundledLanguages } from "shikiji";
 import { type Plugin } from "unified";
@@ -32,7 +31,7 @@ export type ShikiOptions = {
    */
   meta?: Record<string, unknown>;
 
-  transforms?: (meta: Meta) => HastTransformers;
+  transformers?: (meta: Meta) => ShikijiTransformer[];
 };
 
 export type RehypeCustomCodeOptions = {
@@ -61,7 +60,7 @@ export const defaultRehypeCustomCodeOptions = (
 const defaultShikiOptions: Required<ShikiOptions> = {
   langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
   meta: {},
-  transforms: () => ({}),
+  transformers: () => [],
 };
 
 /**
@@ -145,7 +144,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
           if (options.shiki) {
             const fragment = highlighter?.codeToHast(codeText, {
               ...options.shiki,
-              transforms: options.shiki.transforms?.(meta),
+              transformers: options.shiki.transformers?.(meta),
               lang:
                 lang && highlighter.getLoadedLanguages().includes(lang)
                   ? lang

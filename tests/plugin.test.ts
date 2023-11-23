@@ -4,7 +4,6 @@ import JSON5 from "json5";
 import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import { HastTransformers } from "shikiji";
 import { unified } from "unified";
 import { beforeAll, describe, expect, test } from "vitest";
 import {
@@ -376,14 +375,16 @@ describe("rehypeShikiji", () => {
           light: "github-light",
           dark: "one-dark-pro",
         },
-        transforms(meta) {
-          return {
-            line(hast, line) {
-              if (meta.range?.includes(line)) {
-                hast.properties["data-highlight-line"] = true;
-              }
+        transformers(meta) {
+          return [
+            {
+              line(hast, line) {
+                if (meta.range?.includes(line)) {
+                  hast.properties["data-highlight-line"] = true;
+                }
+              },
             },
-          };
+          ];
         },
       },
     });
