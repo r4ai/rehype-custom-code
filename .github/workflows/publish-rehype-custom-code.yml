@@ -35,5 +35,6 @@ jobs:
 
       - name: publish `rehype-custom-code` to npm
         run: npm publish --access public
+        working-directory: packages/rehype-custom-code
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
