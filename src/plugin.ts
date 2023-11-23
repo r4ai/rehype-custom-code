@@ -23,6 +23,7 @@ export type ShikiOptions = {
    * Language names to include.
    *
    * @default Object.keys(bundledLanguages)
+   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#fine-grained-bundle
    */
   langs?: Array<LanguageInput | BuiltinLanguage>;
 
@@ -31,16 +32,105 @@ export type ShikiOptions = {
    */
   meta?: Record<string, unknown>;
 
+  /**
+   * Customize the generated HTML by manipulating the hast tree.
+   * You can pass custom functions to modify the tree for different types of nodes.
+   *
+   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#hast-transformers
+   * @see https://github.com/antfu/shikiji/tree/main/packages/shikiji-transformers
+   */
   transformers?: (meta: Meta) => ShikijiTransformer[];
 };
 
 export type RehypeCustomCodeOptions = {
+  /**
+   * glob pattern to language name associations.
+   * - key: glob pattern
+   * - value: language name. if you want not to be highlighted with shiki, set `ignore`.
+   * @default {}
+   * @example
+   * ```ts
+   * const langAssociations = {
+   *   // highlight `jsx-like-lang` as `jsx`
+   *   "jsx-like-lang": "jsx",
+   * };
+   * ```
+   * Following code block will be highlighted as jsx:
+   * ````md
+   * ```jsx-like-lang
+   * <div>Hello, World!</div>
+   * ```
+   * ````
+   */
   langAssociations?: Record<string, string>;
+
+  /**
+   * List of languages this plugin does not work in.
+   * @example
+   * ```ts
+   * const options: RehypeCustomCodeOptions = {
+   *   ignoreLangs: ["plaintext", "text"],
+   * }
+   * ```
+   */
   ignoreLangs?: string[];
+
+  /**
+   * Prefix for props.
+   * @default "data"
+   * @example
+   * ```ts
+   * const options: RehypeCustomCodeOptions = {
+   *   propsPrefix: "",
+   * }
+   * ```
+   * If this option is given, the following HTML will be output:
+   * ```html
+   * ...
+   * <pre data-lang="javascript" data-title="Hello, World!" data-line="1-5">
+   *   <!-- Some code... -->
+   * </pre>
+   * ```
+   * `propsPrefix: ""` is useful to receive as props in React, etc.
+   */
   propsPrefix?: string;
+
+  /**
+   * Preprocess the meta string.
+   * @default (metaString) => metaString
+   */
   metaStringPreprocess?: (metaString: string) => string;
+
+  /**
+   * Transform the parsed meta data.
+   * @default (meta) => meta
+   */
   metaDataTransform?: (meta: Meta) => Meta;
+
+  /**
+   * Whether to export the code as props.
+   * @default options.shiki ? false : true
+   * @example
+   * ```ts
+   * const options: RehypeCustomCodeOptions = {
+   *   shouldExportCodeAsProps: true,
+   * }
+   * ```
+   * If this option is given, the following HTML will be output:
+   * ```html
+   * <pre data-lang="javascript" data-code='console.log("Hello, World!");\n'>
+   *   <!-- Some code... -->
+   * </pre>
+   * ```
+   */
   shouldExportCodeAsProps?: boolean;
+
+  /**
+   * Options for shikiji.
+   * If this option is given, the code will be highlighted using shiki.
+   * @default false
+   * @see https://github.com/antfu/shikiji
+   */
   shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
@@ -64,9 +154,8 @@ const defaultShikiOptions: Required<ShikiOptions> = {
 };
 
 /**
- * convert pre element to highlighted pre element using shiki
+ * rehype plugin to customize code blocks.
  * @param options options
- * @param options.highlighter shiki highlighter
  * @returns unified plugin
  *
  * @example
