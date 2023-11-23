@@ -1,6 +1,7 @@
 import { Element } from "hast";
 import { isElement } from "hast-util-is-element";
-import { Meta, parseMeta } from "./perser";
+import { parseMeta } from "./perser";
+import { RehypeCustomCodeOptions } from "./plugin";
 
 interface PreElement extends Element {
   tagName: "pre";
@@ -27,5 +28,7 @@ export const hasMetaData = (node: Element): node is ElementWithMetaData =>
     ? true
     : false;
 
-export const getMeta = (node: Element) =>
-  parseMeta(hasMetaData(node) ? node.data.meta : "");
+export const getMeta = (
+  node: Element,
+  preprocess: Required<RehypeCustomCodeOptions>["metaStringPreprocess"],
+) => parseMeta(hasMetaData(node) ? preprocess(node.data.meta) : preprocess(""));

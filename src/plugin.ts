@@ -34,6 +34,7 @@ export type RehypeCustomCodeOptions = {
   langAssociations?: Record<string, string>;
   ignoreLangs?: string[];
   propsPrefix?: string;
+  metaStringPreprocess?: (metaString: string) => string;
   shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
@@ -43,6 +44,7 @@ export const defaultRehypeCustomCodeOptions: Required<RehypeCustomCodeOptions> =
     langAssociations: {},
     ignoreLangs: [],
     propsPrefix: "data-",
+    metaStringPreprocess: (metaString) => metaString,
   };
 
 const defaultShikiOptions: Required<ShikiOptions> = {
@@ -121,7 +123,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
       if (!lang || options.ignoreLangs.includes(lang)) return;
 
       // get meta data
-      const meta = getMeta(codeNode);
+      const meta = getMeta(codeNode, options.metaStringPreprocess);
 
       // get new highlighted pre node if `options.shiki` is given, otherwise use the current pre node
       const newPreNode = (() => {
