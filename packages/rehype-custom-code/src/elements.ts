@@ -31,4 +31,9 @@ export const hasMetaData = (node: Element): node is ElementWithMetaData =>
 export const getMeta = (
   node: Element,
   preprocess: Required<RehypeCustomCodeOptions>["metaStringPreprocess"],
-) => parseMeta(hasMetaData(node) ? preprocess(node.data.meta) : preprocess(""));
+) => {
+  const metaString = hasMetaData(node)
+    ? node.data.meta
+    : (node.properties?.metaString as string) ?? "";
+  return parseMeta(metaString);
+};
