@@ -46,7 +46,7 @@ export const defaultRehypeCustomCodeOptions = (
     shiki: false,
     langAssociations: {},
     ignoreLangs: [],
-    propsPrefix: "data-",
+    propsPrefix: "data",
     shouldExportCodeAsProps: options?.shiki ? false : true,
     metaStringPreprocess: (metaString) => metaString,
   }) satisfies Required<RehypeCustomCodeOptions>;
@@ -159,9 +159,13 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
       );
 
       // set meta data
-      newPreNode.properties.dataLang = lang;
+      newPreNode.properties[getPropsKey(options.propsPrefix, "lang")] = lang;
+      if (options.shouldExportCodeAsProps) {
+        newPreNode.properties[getPropsKey(options.propsPrefix, "code")] =
+          codeText;
+      }
       for (const [key, value] of Object.entries(meta)) {
-        const propsKey = options.propsPrefix + kebabCase(key);
+        const propsKey = getPropsKey(options.propsPrefix, key);
         if (Array.isArray(value) || typeof value === "object") {
           newPreNode.properties[propsKey] = JSON5.stringify(value);
         } else {
@@ -174,5 +178,8 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
     });
   };
 };
+
+const getPropsKey = (prefix: string, key: string) =>
+  `${prefix}-${kebabCase(key)}`;
 
 export default rehypeCustomCode;

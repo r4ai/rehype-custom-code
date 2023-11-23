@@ -71,6 +71,9 @@ describe("rehypeShikiji", () => {
     const pre = doc.querySelector("pre");
     expect(pre).not.toBeNull();
 
+    const code = pre?.getAttribute("data-code");
+    expect(code).toBe('fn main() {\n    println!("Hello, World!");\n}\n');
+
     const lang = pre?.getAttribute("data-lang");
     expect(lang).toBe("rust");
 
@@ -91,5 +94,242 @@ describe("rehypeShikiji", () => {
 
     const someObjectKey = pre?.getAttribute("data-some-object-key") ?? "";
     expect(JSON5.parse(someObjectKey)).toEqual({ a: 1, b: 2, c: 3 });
+  });
+
+  test("check langAssociations option", async () => {
+    const md = dedent`mermaid
+      \`\`\`mermaid title="Hello, World!" {1-5}
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+    const html = await md2html(md, {
+      langAssociations: {
+        mermaid: "diagram",
+      },
+    });
+    const doc = parser.parseFromString(html, "text/html");
+    const pre = doc.querySelector("pre");
+    expect(pre).not.toBeNull();
+
+    const lang = pre?.getAttribute("data-lang");
+    expect(lang).toBe("diagram");
+  });
+
+  test("check ignoreLangs option", async () => {
+    const md = dedent`
+      \`\`\`mermaid title="Hello, World!" {1-5}
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+    const html = await md2html(md, {
+      ignoreLangs: ["mermaid"],
+    });
+    expect(html).toBe(
+      [
+        '<pre><code class="language-mermaid">console.log("Hello, World!");',
+        "</code></pre>",
+      ].join("\n"),
+    );
+  });
+
+  test("check propsPrefix option", async () => {
+    const md = dedent`
+      \`\`\`javascript title="Hello, World!" {1-5} showLineNumbers someKey=someValue someArrayKey=[1,2,3] someObjectKey={a:1,b:2,c:3}
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+    const prefixes = ["prefix-", "Data", "PRE"];
+    for (const prefix of prefixes) {
+      const html = await md2html(md, {
+        propsPrefix: prefix,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute(`${prefix}-code`);
+      expect(code).toBe('console.log("Hello, World!");\n');
+
+      const lang = pre?.getAttribute(`${prefix}-lang`);
+      expect(lang).toBe("javascript");
+
+      const range = pre?.getAttribute(`${prefix}-range`) ?? "";
+      expect(JSON5.parse(range)).toEqual([1, 2, 3, 4, 5]);
+
+      const title = pre?.getAttribute(`${prefix}-title`) ?? "";
+      expect(title).toBe("Hello, World!");
+
+      const showLineNumbers =
+        pre?.getAttribute(`${prefix}-show-line-numbers`) ?? "";
+      expect(showLineNumbers).toBe("true");
+
+      const someKey = pre?.getAttribute(`${prefix}-some-key`) ?? "";
+      expect(someKey).toBe("someValue");
+
+      const someArrayKey = pre?.getAttribute(`${prefix}-some-array-key`) ?? "";
+      expect(JSON5.parse(someArrayKey)).toEqual([1, 2, 3]);
+
+      const someObjectKey =
+        pre?.getAttribute(`${prefix}-some-object-key`) ?? "";
+      expect(JSON5.parse(someObjectKey)).toEqual({ a: 1, b: 2, c: 3 });
+    }
+  });
+
+  test("check shouldExportCodeAsProps option", async () => {
+    const md = dedent`
+      \`\`\`javascript
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+
+    {
+      const html = await md2html(md, {
+        shouldExportCodeAsProps: false,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute("data-code");
+      expect(code).toBeNull();
+    }
+
+    {
+      const html = await md2html(md, {
+        shouldExportCodeAsProps: true,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute("data-code");
+      expect(code).toBe('console.log("Hello, World!");\n');
+    }
+
+    {
+      const html = await md2html(md, {
+        shiki: {
+          themes: {
+            light: "github-light",
+            dark: "one-dark-pro",
+          },
+        },
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute("data-code");
+      expect(code).toBeNull();
+    }
+
+    {
+      const html = await md2html(md, {
+        shiki: {
+          themes: {
+            light: "github-light",
+            dark: "one-dark-pro",
+          },
+        },
+        shouldExportCodeAsProps: true,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute("data-code");
+      expect(code).toBe('console.log("Hello, World!");\n');
+    }
+
+    {
+      const html = await md2html(md, {
+        shiki: {
+          themes: {
+            light: "github-light",
+            dark: "one-dark-pro",
+          },
+        },
+        shouldExportCodeAsProps: false,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre).not.toBeNull();
+
+      const code = pre?.getAttribute("data-code");
+      expect(code).toBeNull();
+    }
+  });
+
+  test("check metaStringPreprocess option", async () => {
+    const md = dedent`
+      \`\`\`javascript :"Hello, World!" {1-5}
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+    const html = await md2html(md, {
+      metaStringPreprocess: (metaString) => {
+        const regex = /^:"(.*?)"(.*)$|^:'(.*?)'(.*)$|^:(.*?)(?:$|\s)(.*)$/;
+        const match = metaString.match(regex);
+        const title = match?.[1];
+        const remains = match?.[2];
+        if (title != null) {
+          return `title="${title}" ${remains ?? ""}`;
+        }
+        return metaString;
+      },
+    });
+    const doc = parser.parseFromString(html, "text/html");
+    const pre = doc.querySelector("pre");
+    expect(pre).not.toBeNull();
+
+    const title = pre?.getAttribute("data-title") ?? "";
+    expect(title).toBe("Hello, World!");
+  });
+
+  test("check shiki option", async () => {
+    const md = dedent`
+      \`\`\`javascript title="Hello, World!"
+      console.log("Hello, World!");
+      \`\`\`
+    `;
+
+    {
+      const html = await md2html(md, {
+        shiki: {
+          themes: {
+            light: "github-light",
+            dark: "one-dark-pro",
+          },
+        },
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre?.classList.contains("shiki")).toBe(true);
+    }
+
+    {
+      const html = await md2html(md, {
+        shiki: false,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre?.classList.contains("shiki")).toBe(false);
+    }
+
+    {
+      const html = await md2html(md);
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre?.classList.contains("shiki")).toBe(false);
+    }
+
+    {
+      const html = await md2html(md, {
+        shiki: undefined,
+      });
+      const doc = parser.parseFromString(html, "text/html");
+      const pre = doc.querySelector("pre");
+      expect(pre?.classList.contains("shiki")).toBe(false);
+    }
   });
 });
