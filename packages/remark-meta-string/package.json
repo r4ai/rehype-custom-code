@@ -1,6 +1,6 @@
 {
-  "name": "rehype-custom-code",
-  "version": "0.2.2",
+  "name": "remark-meta-string",
+  "version": "0.1.0",
   "description": "",
   "keywords": [],
   "author": "rai",
@@ -33,16 +33,8 @@
     "prepublishOnly": "bun run build",
     "check": "bunx @biomejs/biome check --apply ."
   },
-  "peerDependencies": {
-    "shikiji": "^0.7.0"
-  },
+  "peerDependencies": {},
   "dependencies": {
-    "deepmerge": "^4.3.1",
-    "hast-util-is-element": "^3.0.0",
-    "hast-util-to-string": "^3.0.0",
-    "json5": "^2.2.3",
-    "parse-numeric-range": "^1.3.0",
-    "scule": "^1.1.0",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
@@ -50,7 +42,7 @@
     "@qnighy/dedent": "^0.1.1",
     "@types/hast": "^3.0.3",
     "@types/jsdom": "^21.1.6",
-    "bun-plugin-dts": "^0.2.1",
+    "@types/mdast": "^4.0.3",
     "bun-types": "^1.0.14",
     "concurrently": "^8.2.2",
     "jsdom": "^22.1.0",
