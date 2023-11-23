@@ -180,6 +180,6 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
 };
 
 const getPropsKey = (prefix: string, key: string) =>
-  `${prefix}-${kebabCase(key)}`;
+  prefix.length === 0 ? kebabCase(key) : `${prefix}-${kebabCase(key)}`;
 
 export default rehypeCustomCode;

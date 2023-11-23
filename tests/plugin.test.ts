@@ -138,7 +138,9 @@ describe("rehypeShikiji", () => {
       console.log("Hello, World!");
       \`\`\`
     `;
-    const prefixes = ["prefix-", "Data", "PRE"];
+    const prefixes = ["prefix-", "Data", "PRE", ""];
+    const getKey = (prefix: string, key: string) =>
+      prefix.length > 0 ? `${prefix}-${key}` : key;
     for (const prefix of prefixes) {
       const html = await md2html(md, {
         propsPrefix: prefix,
@@ -147,30 +149,31 @@ describe("rehypeShikiji", () => {
       const pre = doc.querySelector("pre");
       expect(pre).not.toBeNull();
 
-      const code = pre?.getAttribute(`${prefix}-code`);
+      const code = pre?.getAttribute(getKey(prefix, "code"));
       expect(code).toBe('console.log("Hello, World!");\n');
 
-      const lang = pre?.getAttribute(`${prefix}-lang`);
+      const lang = pre?.getAttribute(getKey(prefix, "lang"));
       expect(lang).toBe("javascript");
 
-      const range = pre?.getAttribute(`${prefix}-range`) ?? "";
+      const range = pre?.getAttribute(getKey(prefix, "range")) ?? "";
       expect(JSON5.parse(range)).toEqual([1, 2, 3, 4, 5]);
 
-      const title = pre?.getAttribute(`${prefix}-title`) ?? "";
+      const title = pre?.getAttribute(getKey(prefix, "title")) ?? "";
       expect(title).toBe("Hello, World!");
 
       const showLineNumbers =
-        pre?.getAttribute(`${prefix}-show-line-numbers`) ?? "";
+        pre?.getAttribute(getKey(prefix, "show-line-numbers")) ?? "";
       expect(showLineNumbers).toBe("true");
 
-      const someKey = pre?.getAttribute(`${prefix}-some-key`) ?? "";
+      const someKey = pre?.getAttribute(getKey(prefix, "some-key")) ?? "";
       expect(someKey).toBe("someValue");
 
-      const someArrayKey = pre?.getAttribute(`${prefix}-some-array-key`) ?? "";
+      const someArrayKey =
+        pre?.getAttribute(getKey(prefix, "some-array-key")) ?? "";
       expect(JSON5.parse(someArrayKey)).toEqual([1, 2, 3]);
 
       const someObjectKey =
-        pre?.getAttribute(`${prefix}-some-object-key`) ?? "";
+        pre?.getAttribute(getKey(prefix, "some-object-key")) ?? "";
       expect(JSON5.parse(someObjectKey)).toEqual({ a: 1, b: 2, c: 3 });
     }
   });
