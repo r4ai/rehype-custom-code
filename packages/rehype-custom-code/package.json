@@ -31,8 +31,7 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "prepublishOnly": "bun run build",
-    "check": "bunx @biomejs/biome check --apply .",
-    "prepare": "husky install"
+    "check": "bunx @biomejs/biome check --apply ."
   },
   "peerDependencies": {
     "shikiji": "^0.7.0"
@@ -54,7 +53,6 @@
     "bun-plugin-dts": "^0.2.1",
     "bun-types": "^1.0.14",
     "concurrently": "^8.2.2",
-    "husky": "^8.0.3",
     "jsdom": "^22.1.0",
     "lint-staged": "^15.1.0",
     "rehype-stringify": "^10.0.0",

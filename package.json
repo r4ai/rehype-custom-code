@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "bun run --cwd packages/rehype-custom-code",
-    "check": "bunx @biomejs/biome check --apply ."
+    "check": "bunx @biomejs/biome check --apply .",
+    "prepare": "husky install"
   },
   "workspaces": [
     "packages/*"
@@ -12,6 +13,7 @@
   "devDependencies": {
     "bun-types": "latest",
     "typescript": "^5.0.0",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "husky": "^8.0.0"
   }
 }
