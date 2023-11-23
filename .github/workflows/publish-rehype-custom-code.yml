@@ -1,7 +1,8 @@
-name: Publish package to npm
+name: Publish rehype-custom-code to npm
 
 on:
   push:
+    paths: ["packages/rehype-custom-code/**"]
     tags:
       - v*
   workflow_dispatch:
@@ -26,11 +27,13 @@ jobs:
 
       - name: Build package
         run: bun run build
+        working-directory: packages/rehype-custom-code
 
       - name: Test package
-        run: bun run turbo test
+        run: bun run test
+        working-directory: packages/rehype-custom-code
 
-      - name: npm publish
+      - name: publish `rehype-custom-code` to npm
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
