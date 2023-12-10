@@ -1,6 +1,6 @@
 {
   "name": "rehype-custom-code",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "keywords": [],
   "author": "rai",
@@ -34,7 +34,7 @@
     "check": "bunx @biomejs/biome check --apply ."
   },
   "peerDependencies": {
-    "shikiji": "^0.7.0"
+    "shikiji": "^0.8.0"
   },
   "dependencies": {
     "deepmerge": "^4.3.1",
