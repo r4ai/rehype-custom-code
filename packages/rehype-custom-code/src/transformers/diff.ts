@@ -1,6 +1,7 @@
 import { Element, ElementContent, Text } from "hast";
 import type { ShikijiTransformer } from "shikiji";
 import type { Meta } from "../perser";
+import { getPropsKey } from "../util";
 
 const isElement = (node: ElementContent): node is Element =>
   node.type === "element" && node.children.length > 0;
@@ -59,10 +60,13 @@ const getDiffIndentSize = (hast: Element) => {
   return diffIndentSize;
 };
 
-export const transformerDiff = (meta: Meta): ShikijiTransformer => ({
+export const transformerDiff = (
+  meta: Meta,
+  propsPrefix: string,
+): ShikijiTransformer => ({
   code(hast) {
     if (meta.diff) {
-      hast.properties["data-diff"] = true;
+      hast.properties[getPropsKey(propsPrefix, "diff")] = true;
 
       const diffIndentSize = getDiffIndentSize(hast);
       meta.diffIndentSize = diffIndentSize.toString();
@@ -84,11 +88,11 @@ export const transformerDiff = (meta: Meta): ShikijiTransformer => ({
 
         switch (value.trim()[0]) {
           case "+":
-            line.properties["data-diff-added"] = true;
+            line.properties[getPropsKey(propsPrefix, "diff-added")] = true;
             cleanup(line, value, diffIndentSize);
             break;
           case "-":
-            line.properties["data-diff-removed"] = true;
+            line.properties[getPropsKey(propsPrefix, "diff-removed")] = true;
             cleanup(line, value, diffIndentSize);
             break;
         }

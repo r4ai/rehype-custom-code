@@ -17,6 +17,7 @@ import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { getLangFromClassNames } from "./lang";
 import { Meta } from "./perser";
 import { getHighlighter } from "./shiki";
+import { getPropsKey } from "./util";
 
 export type ShikiOptions = {
   /**
@@ -279,6 +280,3 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
     });
   };
 };
-
-const getPropsKey = (prefix: string, key: string) =>
-  prefix.length === 0 ? kebabCase(key) : `${prefix}-${kebabCase(key)}`;
