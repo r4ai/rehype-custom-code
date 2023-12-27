@@ -1,6 +1,6 @@
 # rehype-custom-code (WIP)
 
-This plugin is intended to facilitate the creation of your own custom code blocks using custom components such as React by outputting metadata as Props.
+This plugin is intended to facilitate the creation of your own custom code blocks using custom components such as React by outputting metadata as Props. Therefore, this plugin is headless and only outputs Props based on the input given as metadata. Styling should be done with custom components based on these Props.
 
 This plugin also supports syntax highlighting with shikiji by adding `options.shiki` to the plugin options.
 
@@ -13,6 +13,8 @@ This plugin also supports syntax highlighting with shikiji by adding `options.sh
 - [x] Code block syntax highlighting with shikiji
 - [ ] Inline code syntax highlighting with shikiji
 - [ ] ANSI syntax highlighting
+- [x] Line numbers
+- [x] Line based diff highlighting
 
 ## Installation
 
