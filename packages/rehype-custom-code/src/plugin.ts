@@ -67,6 +67,7 @@ export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
 
   /**
    * List of languages this plugin does not work in.
+   * @default []
    * @example
    * ```ts
    * const options: RehypeCustomCodeOptions = {
@@ -87,12 +88,25 @@ export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
    * ```
    * If this option is given, the following HTML will be output:
    * ```html
-   * ...
-   * <pre data-lang="javascript" data-title="Hello, World!" data-line="1-5">
+   * <pre lang="javascript" title="Hello, World!" line="1-5">
    *   <!-- Some code... -->
    * </pre>
    * ```
    * `propsPrefix: ""` is useful to receive as props in React, etc.
+   *
+   * @example
+   * ```ts
+   * const options: RehypeCustomCodeOptions = {
+   *   propsPrefix: "PRE",
+   * }
+   * ```
+   * If this option is given, the following HTML will be output:
+   * ```html
+   * <pre pre-lang="javascript" pre-title="Hello, World!" pre-line="1-5">
+   *   <!-- Some code... -->
+   * </pre>
+   * ```
+   * given `propsPrefix` is converted to lowercase
    */
   propsPrefix?: string;
 
@@ -109,7 +123,8 @@ export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
   metaDataTransform?: (meta: M) => M;
 
   /**
-   * Whether to export the code as props.
+   * Whether to export the code text as props.
+   * This is useful when you want to use the code text in custom components.
    * @default options.shiki ? false : true
    * @example
    * ```ts
@@ -119,7 +134,7 @@ export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
    * ```
    * If this option is given, the following HTML will be output:
    * ```html
-   * <pre data-lang="javascript" data-code='console.log("Hello, World!");\n'>
+   * <pre data-code='console.log("Hello, World!");\n' ...>
    *   <!-- Some code... -->
    * </pre>
    * ```
@@ -128,7 +143,7 @@ export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
 
   /**
    * Options for shikiji.
-   * If this option is given, the code will be highlighted using shiki.
+   * If this option is given, the code will be highlighted using shikiji.
    * @default false
    * @see https://github.com/antfu/shikiji
    */
