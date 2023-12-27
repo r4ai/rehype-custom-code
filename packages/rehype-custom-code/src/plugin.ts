@@ -2,7 +2,6 @@ import merge from "deepmerge";
 import type { Element, Root } from "hast";
 import { toString as hastToString } from "hast-util-to-string";
 import JSON5 from "json5";
-import { kebabCase } from "scule";
 import type {
   BuiltinLanguage,
   BuiltinTheme,
@@ -11,8 +10,8 @@ import type {
   ShikijiTransformer,
 } from "shikiji";
 import { bundledLanguages } from "shikiji";
-import { type Plugin } from "unified";
 import { visit } from "unist-util-visit";
+import { VFile } from "vfile";
 import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { getLangFromClassNames } from "./lang";
 import { Meta } from "./perser";
@@ -20,7 +19,7 @@ import { getHighlighter } from "./shiki";
 import { transformerDiff, transformerLineNumbers } from "./transformers";
 import { getPropsKey } from "./util";
 
-export type ShikiOptions = {
+export type ShikiOptions<M extends Meta = Meta> = {
   /**
    * Language names to include.
    *
@@ -41,10 +40,10 @@ export type ShikiOptions = {
    * @see https://github.com/antfu/shikiji?tab=readme-ov-file#hast-transformers
    * @see https://github.com/antfu/shikiji/tree/main/packages/shikiji-transformers
    */
-  transformers?: (meta: Meta) => ShikijiTransformer[];
+  transformers?: (meta: M) => ShikijiTransformer[];
 };
 
-export type RehypeCustomCodeOptions = {
+export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
   /**
    * glob pattern to language name associations.
    * - key: glob pattern
@@ -107,7 +106,7 @@ export type RehypeCustomCodeOptions = {
    * Transform the parsed meta data.
    * @default (meta) => meta
    */
-  metaDataTransform?: (meta: Meta) => Meta;
+  metaDataTransform?: (meta: M) => M;
 
   /**
    * Whether to export the code as props.
@@ -133,11 +132,11 @@ export type RehypeCustomCodeOptions = {
    * @default false
    * @see https://github.com/antfu/shikiji
    */
-  shiki?: (ShikiOptions & CodeOptionsThemes<BuiltinTheme>) | false;
+  shiki?: (ShikiOptions<M> & CodeOptionsThemes<BuiltinTheme>) | false;
 };
 
-export const defaultRehypeCustomCodeOptions = (
-  options?: RehypeCustomCodeOptions,
+export const defaultRehypeCustomCodeOptions = <M extends Meta = Meta>(
+  options?: RehypeCustomCodeOptions<M>,
 ) =>
   ({
     shiki: false,
@@ -147,13 +146,13 @@ export const defaultRehypeCustomCodeOptions = (
     shouldExportCodeAsProps: options?.shiki ? false : true,
     metaStringPreprocess: (metaString) => metaString,
     metaDataTransform: (meta) => meta,
-  }) satisfies Required<RehypeCustomCodeOptions>;
+  }) satisfies Required<RehypeCustomCodeOptions<M>>;
 
-const defaultShikiOptions = (
-  options: RehypeCustomCodeOptions,
-): Required<ShikiOptions> => {
+const defaultShikiOptions = <M extends Meta = Meta>(
+  options?: RehypeCustomCodeOptions<M>,
+): Required<ShikiOptions<M>> => {
   const propsPrefix =
-    options.propsPrefix ?? defaultRehypeCustomCodeOptions().propsPrefix;
+    options?.propsPrefix ?? defaultRehypeCustomCodeOptions().propsPrefix;
   return {
     langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
     meta: {},
@@ -163,6 +162,8 @@ const defaultShikiOptions = (
     ],
   };
 };
+
+type PluginReturn = (tree: Root, file: VFile) => void;
 
 /**
  * rehype plugin to customize code blocks.
@@ -196,15 +197,15 @@ const defaultShikiOptions = (
  * console.log(html.toString());
  * ```
  */
-export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
-  _options,
-) => {
-  const options: Required<RehypeCustomCodeOptions> = {
-    ...defaultRehypeCustomCodeOptions(_options),
+export const rehypeCustomCode = <M extends Meta = Meta>(
+  _options: RehypeCustomCodeOptions<M>,
+): PluginReturn => {
+  const options: Required<RehypeCustomCodeOptions<M>> = {
+    ...defaultRehypeCustomCodeOptions<M>(_options),
     ..._options,
     shiki: _options?.shiki
       ? {
-          ...defaultShikiOptions(_options),
+          ...defaultShikiOptions<M>(_options),
           ..._options.shiki,
         }
       : false,
@@ -235,7 +236,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
 
       // get meta data
       const meta = options.metaDataTransform(
-        getMeta(codeNode, options.metaStringPreprocess),
+        getMeta<M>(codeNode, options.metaStringPreprocess),
       );
 
       // get new highlighted pre node if `options.shiki` is given, otherwise use the current pre node

@@ -1,8 +1,11 @@
 import { BuiltinTheme, CodeOptionsThemes } from "shikiji";
 import { getHighlighter as getShikiHighlighter } from "shikiji";
+import { Meta } from "./perser";
 import { RehypeCustomCodeOptions, ShikiOptions } from "./plugin";
 
-export const getHighlighter = (options: RehypeCustomCodeOptions["shiki"]) => {
+export const getHighlighter = <M extends Meta = Meta>(
+  options: RehypeCustomCodeOptions<M>["shiki"],
+) => {
   if (!options) {
     return undefined;
   }

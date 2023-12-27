@@ -3,6 +3,7 @@ import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { Meta } from "../src/perser";
 import {
   RehypeCustomCodeOptions,
   defaultRehypeCustomCodeOptions,
@@ -22,7 +23,7 @@ export const process = async (
         hast = tree;
         return hast;
       })
-      .use(rehypeCustomCode, options)
+      .use(rehypeCustomCode<Meta>, options)
       .use(rehypeStringify)
       .process(md)
   ).toString();

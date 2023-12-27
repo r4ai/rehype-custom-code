@@ -3,10 +3,12 @@ import rangeParser from "parse-numeric-range";
 type RequiredMeta = {
   range?: number[];
   showLineNumbers?: boolean;
+  startLine?: number;
+  diff?: boolean;
 };
 
 type OptionalMeta = {
-  [key: string]: string | boolean | number[] | undefined;
+  [key: string]: unknown;
 };
 
 export type Meta = Omit<OptionalMeta, keyof RequiredMeta> & RequiredMeta;
@@ -14,6 +16,8 @@ export type Meta = Omit<OptionalMeta, keyof RequiredMeta> & RequiredMeta;
 export const defaultMeta: Required<Meta> = {
   range: [],
   showLineNumbers: false,
+  startLine: 1,
+  diff: false,
 };
 
 type Group = {
@@ -38,13 +42,13 @@ const parseRegex =
  * @param meta meta string
  * @returns meta object
  */
-export const parseMeta = (meta: string) => {
+export const parseMeta = <M extends Meta = Meta>(meta: string): M => {
   const matches = meta.matchAll(parseRegex);
 
   const metaObj = { ...defaultMeta };
   for (const match of matches) {
     const groups = match.groups as Group;
-    if (groups.range) {
+    if (groups.range && Array.isArray(metaObj.range)) {
       const range = rangeParser(groups.range);
       metaObj.range = [...metaObj.range, ...range];
     }
@@ -67,7 +71,7 @@ export const parseMeta = (meta: string) => {
   }
   metaObj.range = removeDuplicateAndSort(metaObj.range);
 
-  return metaObj;
+  return metaObj as M;
 };
 
 export const retrieveEscapedString = (str: string) =>
