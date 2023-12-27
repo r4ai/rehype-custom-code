@@ -32,7 +32,7 @@
     "build:esm": "tsc -p tsconfig.esm.json",
     "prepublishOnly": "bun run build",
     "check": "bunx @biomejs/biome check --apply .",
-    "docs": "bunx typedoc ./src/**/index.ts"
+    "docs": "typedoc './src/**/index.ts'"
   },
   "peerDependencies": {
     "shikiji": "^0.8.0 || ^0.9.0"
