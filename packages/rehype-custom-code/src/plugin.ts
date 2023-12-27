@@ -223,7 +223,7 @@ export const rehypeCustomCode = <M extends Meta = Meta>(
       // check if the current pre node has a code element as its child
       const codeNode = preNode.children[0];
       if (!isCodeElement(codeNode) || !codeNode.properties) return;
-      const codeText = hastToString(codeNode.children[0]);
+      const codeText = hastToString(codeNode.children[0]).trimEnd();
 
       // detect language from class names
       const lang = getLangFromClassNames(

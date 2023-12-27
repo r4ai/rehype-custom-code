@@ -36,7 +36,7 @@ describe("rehypeShikiji", () => {
 
   test("strict check", async () => {
     const md = dedent`
-      \`\`\`javascript title="Hello, World!" {1-5}
+      \`\`\`javascript title="Hello, World!" {1-5} showLineNumbers
       console.log("Hello, World!");
       \`\`\`
     `;
@@ -49,8 +49,7 @@ describe("rehypeShikiji", () => {
       },
     });
     const expectedHtml = dedent`
-      <pre class="shiki shiki-themes github-light one-dark-pro" style="background-color:#fff;--shiki-dark-bg:#282c34;color:#24292e;--shiki-dark:#abb2bf" tabindex="0" data-lang="javascript" data-range="[1,2,3,4,5]" data-show-line-numbers="false" data-start-line="1" data-diff="false" data-title="Hello, World!"><code><span class="line"><span style="color:#24292E;--shiki-dark:#E5C07B">console</span><span style="color:#24292E;--shiki-dark:#ABB2BF">.</span><span style="color:#6F42C1;--shiki-dark:#61AFEF">log</span><span style="color:#24292E;--shiki-dark:#ABB2BF">(</span><span style="color:#032F62;--shiki-dark:#98C379">"Hello, World!"</span><span style="color:#24292E;--shiki-dark:#ABB2BF">);</span></span>
-      <span class="line"></span></code></pre>
+      <pre class="shiki shiki-themes github-light one-dark-pro" style="background-color:#fff;--shiki-dark-bg:#282c34;color:#24292e;--shiki-dark:#abb2bf" tabindex="0" data-lang="javascript" data-range="[1,2,3,4,5]" data-show-line-numbers="true" data-start-line="1" data-diff="false" data-title="Hello, World!"><code data-line-numbers><span class="line" data-line="1"><span style="color:#24292E;--shiki-dark:#E5C07B">console</span><span style="color:#24292E;--shiki-dark:#ABB2BF">.</span><span style="color:#6F42C1;--shiki-dark:#61AFEF">log</span><span style="color:#24292E;--shiki-dark:#ABB2BF">(</span><span style="color:#032F62;--shiki-dark:#98C379">"Hello, World!"</span><span style="color:#24292E;--shiki-dark:#ABB2BF">);</span></span></code></pre>
     `
       .split("\n")
       .filter((line) => line.length > 0)
@@ -72,7 +71,7 @@ describe("rehypeShikiji", () => {
     expect(pre).not.toBeNull();
 
     const code = pre?.getAttribute("data-code");
-    expect(code).toBe('fn main() {\n    println!("Hello, World!");\n}\n');
+    expect(code).toBe('fn main() {\n    println!("Hello, World!");\n}');
 
     const lang = pre?.getAttribute("data-lang");
     expect(lang).toBe("rust");
@@ -150,7 +149,7 @@ describe("rehypeShikiji", () => {
       expect(pre).not.toBeNull();
 
       const code = pre?.getAttribute(getKey(prefix, "code"));
-      expect(code).toBe('console.log("Hello, World!");\n');
+      expect(code).toBe('console.log("Hello, World!");');
 
       const lang = pre?.getAttribute(getKey(prefix, "lang"));
       expect(lang).toBe("javascript");
@@ -206,7 +205,7 @@ describe("rehypeShikiji", () => {
       expect(pre).not.toBeNull();
 
       const code = pre?.getAttribute("data-code");
-      expect(code).toBe('console.log("Hello, World!");\n');
+      expect(code).toBe('console.log("Hello, World!");');
     }
 
     {
@@ -241,7 +240,7 @@ describe("rehypeShikiji", () => {
       expect(pre).not.toBeNull();
 
       const code = pre?.getAttribute("data-code");
-      expect(code).toBe('console.log("Hello, World!");\n');
+      expect(code).toBe('console.log("Hello, World!");');
     }
 
     {

@@ -37,7 +37,6 @@ describe("diff", () => {
       "fn main() {",
       '    println!("Hello, World!");',
       "}",
-      "",
     ]);
     expect(addedLines?.length).toBe(2);
     expect(removedLines?.length).toBe(1);
@@ -67,7 +66,6 @@ describe("diff", () => {
       "fn main() {",
       '    println!("Hello, World!");',
       "}",
-      "",
     ]);
     expect(addedLines?.length).toBe(2);
     expect(removedLines?.length).toBe(1);
@@ -97,7 +95,6 @@ describe("diff", () => {
       "fn main() {",
       '    println!("Hello, World!");',
       "}",
-      "",
     ]);
     expect(addedLines?.length).toBe(2);
     expect(removedLines?.length).toBe(1);
@@ -127,7 +124,6 @@ describe("diff", () => {
       "fn main() {",
       '    println!("Hello, World!");',
       "}",
-      "",
     ]);
     expect(addedLines?.length).toBe(2);
     expect(removedLines?.length).toBe(1);
