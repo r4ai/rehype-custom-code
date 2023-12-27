@@ -1,7 +1,6 @@
 import { dedent } from "@qnighy/dedent";
 import { JSDOM } from "jsdom";
 import { beforeAll, describe, expect, test } from "vitest";
-import { transformerDiff } from "../../src/transformers";
 import { process } from "../process";
 
 describe("diff", () => {
