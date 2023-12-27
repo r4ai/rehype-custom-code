@@ -90,7 +90,6 @@ describe("diff", () => {
         transformers: (meta) => [transformerDiff(meta, "data")],
       },
     });
-    console.log(html);
     const doc = parser.parseFromString(html, "text/html");
     const pre = doc.querySelector("pre");
     const preCodeText = pre?.textContent?.split("\n");

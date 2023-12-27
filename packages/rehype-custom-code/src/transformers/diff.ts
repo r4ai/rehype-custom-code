@@ -37,6 +37,8 @@ const cleanup = (line: Line, value: string, diffIndentSize: number) => {
     }
     secondChild.children[0].value = secondChild.children[0].value.slice(1);
   }
+
+  return line.children;
 };
 
 const getDiffIndentSize = (hast: Element) => {
@@ -72,7 +74,7 @@ export const transformerDiff = (
       meta.diffIndentSize = diffIndentSize.toString();
 
       for (const line of hast.children) {
-        if (!isLine(line)) return;
+        if (!isLine(line)) continue;
 
         const value = line.children[0].children[0].value;
 
@@ -86,14 +88,34 @@ export const transformerDiff = (
             line.children[0].children[0].value.slice(1);
         }
 
+        if (value.trim()[0] === "+" || value.trim()[0] === "-") {
+          // remove "+" or "-"
+          line.children[0].children[0].value = value.trimStart().slice(1);
+
+          // remove unnecessary spaces
+          const secondChild =
+            value.trim().length > 1 ? line.children[0] : line.children[1];
+          const secondValue = secondChild.children[0].value;
+          const toRemoveChars = secondValue.slice(
+            0,
+            Math.max(0, diffIndentSize - 1),
+          );
+
+          for (let i = 0; i < toRemoveChars.length; i++) {
+            if (toRemoveChars[i] !== " ") {
+              break;
+            }
+            secondChild.children[0].value =
+              secondChild.children[0].value.slice(1);
+          }
+        }
+
         switch (value.trim()[0]) {
           case "+":
             line.properties[getPropsKey(propsPrefix, "diff-added")] = true;
-            cleanup(line, value, diffIndentSize);
             break;
           case "-":
             line.properties[getPropsKey(propsPrefix, "diff-removed")] = true;
-            cleanup(line, value, diffIndentSize);
             break;
         }
       }
