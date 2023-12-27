@@ -42,6 +42,17 @@ const getDiffIndentSize = (hast: Element) => {
   return diffIndentSize;
 };
 
+/**
+ * @example
+ * ````md
+ * ```rust diff
+ *   fn main() {
+ * -     println!("Hello, World!")
+ * +     println!("Hello, Shikiji!")
+ *   }
+ * ```
+ * ````
+ */
 export const transformerDiff = (
   meta: Meta,
   propsPrefix: string,

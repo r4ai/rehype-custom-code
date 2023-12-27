@@ -25,7 +25,6 @@ describe("diff", () => {
     const { html } = await process(md, {
       shiki: {
         theme: "github-dark",
-        transformers: (meta) => [transformerDiff(meta, "data")],
       },
     });
     const doc = parser.parseFromString(html, "text/html");
@@ -56,7 +55,6 @@ describe("diff", () => {
     const { html } = await process(md, {
       shiki: {
         theme: "github-dark",
-        transformers: (meta) => [transformerDiff(meta, "data")],
       },
     });
     const doc = parser.parseFromString(html, "text/html");
@@ -87,7 +85,6 @@ describe("diff", () => {
     const { html } = await process(md, {
       shiki: {
         theme: "github-dark",
-        transformers: (meta) => [transformerDiff(meta, "data")],
       },
     });
     const doc = parser.parseFromString(html, "text/html");
@@ -118,7 +115,6 @@ describe("diff", () => {
     const { html } = await process(md, {
       shiki: {
         theme: "github-dark",
-        transformers: (meta) => [transformerDiff(meta, "data")],
       },
     });
     const doc = parser.parseFromString(html, "text/html");

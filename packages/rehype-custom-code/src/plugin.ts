@@ -17,6 +17,7 @@ import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { getLangFromClassNames } from "./lang";
 import { Meta } from "./perser";
 import { getHighlighter } from "./shiki";
+import { transformerDiff, transformerLineNumbers } from "./transformers";
 import { getPropsKey } from "./util";
 
 export type ShikiOptions = {
@@ -148,10 +149,19 @@ export const defaultRehypeCustomCodeOptions = (
     metaDataTransform: (meta) => meta,
   }) satisfies Required<RehypeCustomCodeOptions>;
 
-const defaultShikiOptions: Required<ShikiOptions> = {
-  langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
-  meta: {},
-  transformers: () => [],
+const defaultShikiOptions = (
+  options: RehypeCustomCodeOptions,
+): Required<ShikiOptions> => {
+  const propsPrefix =
+    options.propsPrefix ?? defaultRehypeCustomCodeOptions().propsPrefix;
+  return {
+    langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
+    meta: {},
+    transformers: (meta) => [
+      transformerLineNumbers(meta, propsPrefix),
+      transformerDiff(meta, propsPrefix),
+    ],
+  };
 };
 
 /**
@@ -194,7 +204,7 @@ export const rehypeCustomCode: Plugin<[RehypeCustomCodeOptions?], Root> = (
     ..._options,
     shiki: _options?.shiki
       ? {
-          ...defaultShikiOptions,
+          ...defaultShikiOptions(_options),
           ..._options.shiki,
         }
       : false,
