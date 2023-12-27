@@ -36,7 +36,10 @@ bun add rehype-custom-code
 This is the most basic example and is usually used in conjunction with rehype-react or mdx, with the pre tag replaced by its own component. To allow customization with your own components, this plugin is designed to pass metadata information as Props; in the case of HTML output, this is output as HTML attributes.
 
 ```ts
-import { rehypeCustomCode, type RehypeCustomCodeMeta } from "rehype-custom-code";
+import {
+  rehypeCustomCode,
+  type RehypeCustomCodeMeta,
+} from "rehype-custom-code";
 
 const md = `
   \`\`\`javascript title="Hello, World!" {1-5}
@@ -47,14 +50,14 @@ const md = `
 // You can define your own typescript type to the metadata.
 type Meta = RehypeCustomCodeMeta & {
   someKey: string;
-}
+};
 
 const html = await unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeCustomCode<Meta>, {
     shiki: {
-      propsPrefix: "data",
+      propsPrefix: "data", // for JSX like languages, use `propsPrefix: ""`
       themes: {
         light: "github-light",
         dark: "one-dark-pro",
