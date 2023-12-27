@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "bun run --cwd packages/rehype-custom-code",
+    "docs": "bun run ./scripts/docs.ts",
     "check": "bunx @biomejs/biome check --apply .",
     "prepare": "husky install"
   },
