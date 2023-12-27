@@ -21,26 +21,6 @@ const isLine = (line: ElementContent): line is Line =>
   isElement(line.children[0]) &&
   isText(line.children[0].children[0]);
 
-const cleanup = (line: Line, value: string, diffIndentSize: number) => {
-  // remove "+" or "-"
-  line.children[0].children[0].value = value.trimStart().slice(1);
-
-  // remove unnecessary spaces
-  const secondChild =
-    value.trim().length > 1 ? line.children[0] : line.children[1];
-  const secondValue = secondChild.children[0].value;
-  const toRemoveChars = secondValue.slice(0, Math.max(0, diffIndentSize - 1));
-
-  for (let i = 0; i < toRemoveChars.length; i++) {
-    if (toRemoveChars[i] !== " ") {
-      break;
-    }
-    secondChild.children[0].value = secondChild.children[0].value.slice(1);
-  }
-
-  return line.children;
-};
-
 const getDiffIndentSize = (hast: Element) => {
   let diffIndentSize = 0;
   for (const child of hast.children) {
@@ -67,56 +47,60 @@ export const transformerDiff = (
   propsPrefix: string,
 ): ShikijiTransformer => ({
   code(hast) {
-    if (meta.diff) {
-      hast.properties[getPropsKey(propsPrefix, "diff")] = true;
+    if (!meta.diff) return;
 
-      const diffIndentSize = getDiffIndentSize(hast);
-      meta.diffIndentSize = diffIndentSize.toString();
+    hast.properties[getPropsKey(propsPrefix, "diff")] = true;
 
-      for (const line of hast.children) {
-        if (!isLine(line)) continue;
+    // calculate diff indent size
+    // e.g. "+ fn main() {"
+    //       ^^
+    //       diffIndentSize = 2
+    const diffIndentSize = getDiffIndentSize(hast);
+    meta.diffIndentSize = diffIndentSize.toString();
 
-        const value = line.children[0].children[0].value;
+    for (const line of hast.children) {
+      if (!isLine(line)) continue;
 
-        // remove unnecessary spaces
-        const toRemoveChars = value.slice(0, diffIndentSize);
-        for (let i = 0; i < toRemoveChars.length; i++) {
-          if (toRemoveChars[i] !== " ") {
-            break;
-          }
-          line.children[0].children[0].value =
-            line.children[0].children[0].value.slice(1);
+      const firstSpanValue = line.children[0].children[0].value;
+      const firstChar = firstSpanValue.trim()[0];
+
+      // add "diff-added" or "diff-removed" attribute to the line
+      switch (firstChar) {
+        case "+":
+          line.properties[getPropsKey(propsPrefix, "diff-added")] = true;
+          break;
+        case "-":
+          line.properties[getPropsKey(propsPrefix, "diff-removed")] = true;
+          break;
+      }
+
+      let toDeleteDiffIndentSize = diffIndentSize;
+
+      // remove "+" or "-"
+      // e.g. "+  fn main() {"
+      //       ^
+      //       remove this "+" char
+      if (firstChar === "-" || firstChar === "+") {
+        const removedFirstSpanValue = firstSpanValue.trimStart().slice(1);
+        if (removedFirstSpanValue === "") {
+          line.children.splice(0, 1);
+        } else {
+          line.children[0].children[0].value = removedFirstSpanValue;
         }
+        toDeleteDiffIndentSize -= 1;
+      }
 
-        if (value.trim()[0] === "+" || value.trim()[0] === "-") {
-          // remove "+" or "-"
-          line.children[0].children[0].value = value.trimStart().slice(1);
-
-          // remove unnecessary spaces
-          const secondChild =
-            value.trim().length > 1 ? line.children[0] : line.children[1];
-          const secondValue = secondChild.children[0].value;
-          const toRemoveChars = secondValue.slice(
-            0,
-            Math.max(0, diffIndentSize - 1),
-          );
-
-          for (let i = 0; i < toRemoveChars.length; i++) {
-            if (toRemoveChars[i] !== " ") {
-              break;
-            }
-            secondChild.children[0].value =
-              secondChild.children[0].value.slice(1);
-          }
-        }
-
-        switch (value.trim()[0]) {
-          case "+":
-            line.properties[getPropsKey(propsPrefix, "diff-added")] = true;
-            break;
-          case "-":
-            line.properties[getPropsKey(propsPrefix, "diff-removed")] = true;
-            break;
+      // remove unnecessary spaces
+      // e.g. "+  fn main() {"
+      //        ^^
+      //        this is unnecessary spaces
+      for (const span of line.children) {
+        const value = span.children[0].value;
+        const toRemoveChars = value.slice(0, toDeleteDiffIndentSize);
+        for (const toRemoveChar of toRemoveChars) {
+          if (toRemoveChar !== " ") return;
+          toDeleteDiffIndentSize -= 1;
+          span.children[0].value = span.children[0].value.slice(1);
         }
       }
     }
