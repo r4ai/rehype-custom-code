@@ -87,6 +87,10 @@ Yields:
 </pre>
 ```
 
+## Options
+
+See [RehypeCustomCodeOptions](https://r4ai.github.io/rehype-custom-code/api/types/index.RehypeCustomCodeOptions.html) for available options.
+
 ## Development
 
 ### Commands
