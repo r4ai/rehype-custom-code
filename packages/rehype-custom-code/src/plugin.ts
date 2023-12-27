@@ -16,7 +16,11 @@ import { getMeta, isCodeElement, isPreElement } from "./elements";
 import { getLangFromClassNames } from "./lang";
 import { Meta } from "./perser";
 import { getHighlighter } from "./shiki";
-import { transformerDiff, transformerLineNumbers } from "./transformers";
+import {
+  transformerDiff,
+  transformerHighlightLine,
+  transformerLineNumbers,
+} from "./transformers";
 import { getPropsKey } from "./util";
 
 export type ShikiOptions<M extends Meta = Meta> = {
@@ -174,6 +178,7 @@ const defaultShikiOptions = <M extends Meta = Meta>(
     transformers: (meta) => [
       transformerLineNumbers(meta, propsPrefix),
       transformerDiff(meta, propsPrefix),
+      transformerHighlightLine(meta, propsPrefix),
     ],
   };
 };
