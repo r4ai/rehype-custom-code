@@ -29,6 +29,13 @@ pnpm add rehype-custom-code
 bun add rehype-custom-code
 ```
 
+## RealWorld Examples
+
+- https://github.com/r4ai/r4ai.dev
+- https://github.com/ricora/alg-blog
+
+![example](https://github.com/r4ai/rehype-custom-code/assets/96561881/c895d618-625d-4c2d-b58f-56b607a57755)
+
 ## Usage
 
 ### Generate HTML
