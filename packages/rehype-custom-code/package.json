@@ -35,7 +35,7 @@
     "docs": "typedoc './src/**/index.ts'"
   },
   "peerDependencies": {
-    "shikiji": "^0.8.0 || ^0.9.0"
+    "shikiji": "^0.8.0 || ^0.9.0 || ^0.10.0"
   },
   "dependencies": {
     "deepmerge": "^4.3.1",
