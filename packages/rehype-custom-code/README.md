@@ -2,7 +2,7 @@
 
 This plugin is intended to facilitate the creation of your own custom code blocks using custom components such as React by outputting metadata as Props. Therefore, this plugin is headless and only outputs Props based on the input given as metadata. Styling should be done with custom components based on these Props.
 
-This plugin also supports syntax highlighting with shikiji by adding `options.shiki` to the plugin options.
+This plugin also supports syntax highlighting with shiki by adding `options.shiki` to the plugin options.
 
 ## Features
 
@@ -10,8 +10,8 @@ This plugin also supports syntax highlighting with shikiji by adding `options.sh
   - [x] Custom Key-Value Pairs e.g. `title="Hello, World!"`, `caption=main.js`
   - [x] Numeric Range e.g. `{1-5}`, `{1,2,3,4,5}`
   - [ ] Word Range e.g. `/hello/`, `/helloworld/3-5`
-- [x] Code block syntax highlighting with shikiji
-- [ ] Inline code syntax highlighting with shikiji
+- [x] Code block syntax highlighting with shiki
+- [ ] Inline code syntax highlighting with shiki
 - [ ] ANSI syntax highlighting
 - [x] Line numbers
 - [x] Line based diff highlighting
