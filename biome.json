@@ -6,13 +6,19 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "complexity": {
+        "noBannedTypes": "off"
+      }
     }
   },
   "formatter": {
     "indentStyle": "space"
   },
   "files": {
-    "ignore": ["node_modules", "dist"]
+    "ignore": [
+      "node_modules",
+      "dist"
+    ]
   }
 }
