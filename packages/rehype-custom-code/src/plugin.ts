@@ -3,13 +3,13 @@ import type { Element, Root } from "hast";
 import { toString as hastToString } from "hast-util-to-string";
 import JSON5 from "json5";
 import type {
-  BuiltinLanguage,
   BuiltinTheme,
   CodeOptionsThemes,
+  HighlighterCoreOptions,
   LanguageInput,
-  ShikijiTransformer,
-} from "shikiji";
-import { bundledLanguages } from "shikiji";
+  ShikiTransformer,
+} from "shiki";
+import { bundledLanguages } from "shiki";
 import { visit } from "unist-util-visit";
 import { VFile } from "vfile";
 import { getMeta, isCodeElement, isPreElement } from "./elements";
@@ -28,9 +28,9 @@ export type ShikiOptions<M extends Meta = Meta> = {
    * Language names to include.
    *
    * @default Object.keys(bundledLanguages)
-   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#fine-grained-bundle
+   * @see https://shiki.style/guide/install#fine-grained-bundle
    */
-  langs?: Array<LanguageInput | BuiltinLanguage>;
+  langs?: HighlighterCoreOptions["langs"];
 
   /**
    * Extra meta data to pass to the highlighter
@@ -41,10 +41,9 @@ export type ShikiOptions<M extends Meta = Meta> = {
    * Customize the generated HTML by manipulating the hast tree.
    * You can pass custom functions to modify the tree for different types of nodes.
    *
-   * @see https://github.com/antfu/shikiji?tab=readme-ov-file#hast-transformers
-   * @see https://github.com/antfu/shikiji/tree/main/packages/shikiji-transformers
+   * @see https://shiki.style/guide/transformers
    */
-  transformers?: (meta: M) => ShikijiTransformer[];
+  transformers?: (meta: M) => ShikiTransformer[];
 };
 
 export type RehypeCustomCodeOptions<M extends Meta = Meta> = {
@@ -173,7 +172,7 @@ const defaultShikiOptions = <M extends Meta = Meta>(
   const propsPrefix =
     options?.propsPrefix ?? defaultRehypeCustomCodeOptions().propsPrefix;
   return {
-    langs: Object.keys(bundledLanguages) as BuiltinLanguage[],
+    langs: Object.keys(bundledLanguages) as unknown as LanguageInput[],
     meta: {},
     transformers: (meta) => [
       transformerLineNumbers(meta, propsPrefix),

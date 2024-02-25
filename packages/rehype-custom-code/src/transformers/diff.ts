@@ -1,5 +1,5 @@
 import { Element, ElementContent, Text } from "hast";
-import type { ShikijiTransformer } from "shikiji";
+import type { ShikiTransformer } from "shiki";
 import type { Meta } from "../perser";
 import { getPropsKey } from "../util";
 
@@ -56,7 +56,7 @@ const getDiffIndentSize = (hast: Element) => {
 export const transformerDiff = (
   meta: Meta,
   propsPrefix: string,
-): ShikijiTransformer => ({
+): ShikiTransformer => ({
   code(hast) {
     if (!meta.diff) return;
 

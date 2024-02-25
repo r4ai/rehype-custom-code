@@ -1,4 +1,4 @@
-import type { ShikijiTransformer } from "shikiji";
+import type { ShikiTransformer } from "shiki";
 import { Meta } from "../perser";
 import { getPropsKey } from "../util";
 
@@ -8,7 +8,7 @@ import { getPropsKey } from "../util";
 export const transformerHighlightLine = (
   meta: Meta,
   propsPrefix: string,
-): ShikijiTransformer => ({
+): ShikiTransformer => ({
   line: (hast, line) => {
     if (meta.range?.includes(line)) {
       hast.properties[getPropsKey(propsPrefix, "highlighted-line")] = true;
