@@ -31,7 +31,7 @@
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
     "prepublishOnly": "bun run build",
-    "check": "bunx @biomejs/biome check --apply ."
+    "check": "bun x @biomejs/biome check --apply ."
   },
   "peerDependencies": {},
   "dependencies": {

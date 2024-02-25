@@ -1,11 +1,11 @@
-import { ShikijiTransformer } from "shikiji";
+import { ShikiTransformer } from "shiki";
 import { Meta } from "../perser";
 import { getPropsKey } from "../util";
 
 export const transformerLineNumbers = (
   meta: Meta,
   propsPrefix: string,
-): ShikijiTransformer => ({
+): ShikiTransformer => ({
   code: (hast) => {
     if (meta.showLineNumbers) {
       hast.properties[getPropsKey(propsPrefix, "line-numbers")] = true;

@@ -1,7 +1,7 @@
-import { BuiltinTheme, CodeOptionsThemes } from "shikiji";
-import { getHighlighter as getShikiHighlighter } from "shikiji";
+import { BuiltinTheme } from "shiki";
+import { getHighlighter as getShikiHighlighter } from "shiki";
 import { Meta } from "./perser";
-import { RehypeCustomCodeOptions, ShikiOptions } from "./plugin";
+import { RehypeCustomCodeOptions } from "./plugin";
 
 export const getHighlighter = <M extends Meta = Meta>(
   options: RehypeCustomCodeOptions<M>["shiki"],
@@ -17,6 +17,6 @@ export const getHighlighter = <M extends Meta = Meta>(
   return getShikiHighlighter({
     ...options.meta,
     themes,
-    langs: options.langs,
+    langs: options.langs ?? [],
   });
 };
