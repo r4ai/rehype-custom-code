@@ -7,10 +7,10 @@ import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { beforeAll, describe, expect, test } from "vitest";
 import {
-  RehypeCustomCodeOptions,
+  type RehypeCustomCodeOptions,
   defaultRehypeCustomCodeOptions,
   rehypeCustomCode,
-} from "../src/plugin";
+} from "../src/plugin.js";
 
 const md2html = async (
   mdText: string,

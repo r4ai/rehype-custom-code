@@ -1,7 +1,7 @@
 import { dedent } from "@qnighy/dedent";
 import { JSDOM } from "jsdom";
 import { beforeAll, describe, expect, test } from "vitest";
-import { process } from "../process";
+import { process } from "../process.js";
 
 describe("diff", () => {
   let jsdom: JSDOM;

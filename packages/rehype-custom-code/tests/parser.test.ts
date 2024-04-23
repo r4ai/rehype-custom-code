@@ -1,11 +1,11 @@
 import { describe, expect, test } from "vitest";
 import {
-  Meta,
+  type Meta,
   defaultMeta,
   parseMeta,
   removeDuplicateAndSort,
   retrieveEscapedString,
-} from "../src/perser";
+} from "../src/perser.js";
 
 describe("utility functions", () => {
   test("retrieve escaped string", () => {

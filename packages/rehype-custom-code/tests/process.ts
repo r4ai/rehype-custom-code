@@ -3,12 +3,12 @@ import rehypeStringify from "rehype-stringify";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
-import { Meta } from "../src/perser";
+import type { Meta } from "../src/perser.js";
 import {
-  RehypeCustomCodeOptions,
+  type RehypeCustomCodeOptions,
   defaultRehypeCustomCodeOptions,
   rehypeCustomCode,
-} from "../src/plugin";
+} from "../src/plugin.js";
 
 export const process = async (
   md: string,
