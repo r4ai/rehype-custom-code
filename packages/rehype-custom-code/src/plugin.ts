@@ -1,6 +1,6 @@
 import merge from "deepmerge";
 import type { Element, Root } from "hast";
-import { toString as hastToString } from "hast-util-to-string";
+import { toText } from "hast-util-to-text";
 import JSON5 from "json5";
 import type {
   BuiltinTheme,
@@ -242,7 +242,7 @@ export const rehypeCustomCode = <M extends Meta = Meta>(
       // check if the current pre node has a code element as its child
       const codeNode = preNode.children[0];
       if (!isCodeElement(codeNode) || !codeNode.properties) return;
-      const codeText = hastToString(codeNode.children[0]).trimEnd();
+      const codeText = toText(codeNode.children[0], { whitespace: "pre" });
 
       // detect language from class names
       const lang = getLangFromClassNames(
