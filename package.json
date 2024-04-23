@@ -1,7 +1,8 @@
 {
   "name": "root",
-  "module": "index.ts",
   "type": "module",
+  "author": "rai",
+  "private": true,
   "scripts": {
     "build": "bun run turbo build",
     "test": "bun run turbo test",
