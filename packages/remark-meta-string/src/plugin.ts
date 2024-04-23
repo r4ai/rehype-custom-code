@@ -9,7 +9,7 @@ export const remarkMetaString: Plugin<[{}?], Root> = () => {
       node.data = {
         ...node.data,
         hProperties: {
-          // @ts-expect-error
+          // @ts-ignore
           ...node.data?.hProperties,
           metaString: node.meta,
         },

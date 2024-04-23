@@ -1,6 +1,6 @@
-import { ShikiTransformer } from "shiki";
-import { Meta } from "../perser";
-import { getPropsKey } from "../util";
+import type { ShikiTransformer } from "shiki";
+import type { Meta } from "../perser.js";
+import { getPropsKey } from "../util.js";
 
 export const transformerLineNumbers = (
   meta: Meta,

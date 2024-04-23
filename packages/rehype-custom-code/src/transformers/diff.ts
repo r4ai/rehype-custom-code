@@ -1,7 +1,7 @@
-import { Element, ElementContent, Text } from "hast";
+import type { Element, ElementContent, Text } from "hast";
 import type { ShikiTransformer } from "shiki";
-import type { Meta } from "../perser";
-import { getPropsKey } from "../util";
+import type { Meta } from "../perser.js";
+import { getPropsKey } from "../util.js";
 
 const isElement = (node: ElementContent): node is Element =>
   node.type === "element" && node.children.length > 0;

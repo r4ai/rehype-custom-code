@@ -1,4 +1,4 @@
-import { RehypeCustomCodeOptions, ShikiOptions } from "./plugin";
+import type { RehypeCustomCodeOptions } from "./plugin.js";
 
 /**
  * Get language from class names

@@ -1,6 +1,6 @@
 import type { ShikiTransformer } from "shiki";
-import { Meta } from "../perser";
-import { getPropsKey } from "../util";
+import type { Meta } from "../perser.js";
+import { getPropsKey } from "../util.js";
 
 /**
  * Add "highlighted-line" property to the hast node if the line is in the range.

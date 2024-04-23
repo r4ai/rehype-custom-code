@@ -1,7 +1,7 @@
-import { BuiltinTheme } from "shiki";
+import type { BuiltinTheme } from "shiki";
 import { getHighlighter as getShikiHighlighter } from "shiki";
-import { Meta } from "./perser";
-import { RehypeCustomCodeOptions } from "./plugin";
+import type { Meta } from "./perser.js";
+import type { RehypeCustomCodeOptions } from "./plugin.js";
 
 export const getHighlighter = <M extends Meta = Meta>(
   options: RehypeCustomCodeOptions<M>["shiki"],

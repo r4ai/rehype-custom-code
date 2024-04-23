@@ -12,16 +12,16 @@ import type {
 import { bundledLanguages } from "shiki";
 import { visit } from "unist-util-visit";
 import { VFile } from "vfile";
-import { getMeta, isCodeElement, isPreElement } from "./elements";
-import { getLangFromClassNames } from "./lang";
-import { Meta } from "./perser";
-import { getHighlighter } from "./shiki";
+import { getMeta, isCodeElement, isPreElement } from "./elements.js";
+import { getLangFromClassNames } from "./lang.js";
+import type { Meta } from "./perser.js";
+import { getHighlighter } from "./shiki.js";
 import {
   transformerDiff,
   transformerHighlightLine,
   transformerLineNumbers,
-} from "./transformers";
-import { getPropsKey } from "./util";
+} from "./transformers/index.js";
+import { getPropsKey } from "./util.js";
 
 export type ShikiOptions<M extends Meta = Meta> = {
   /**

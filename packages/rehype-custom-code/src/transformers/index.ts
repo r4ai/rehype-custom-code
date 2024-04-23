@@ -1,3 +1,3 @@
-export * from "./diff";
-export * from "./lineNumbers";
-export * from "./highlightLine";
+export * from "./diff.js";
+export * from "./lineNumbers.js";
+export * from "./highlightLine.js";

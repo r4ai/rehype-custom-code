@@ -1,7 +1,7 @@
-import { Element } from "hast";
+import type { Element } from "hast";
 import { isElement } from "hast-util-is-element";
-import { Meta, parseMeta } from "./perser";
-import { RehypeCustomCodeOptions } from "./plugin";
+import { type Meta, parseMeta } from "./perser.js";
+import type { RehypeCustomCodeOptions } from "./plugin.js";
 
 interface PreElement extends Element {
   tagName: "pre";
